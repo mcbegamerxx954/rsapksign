@@ -61,7 +61,6 @@ fn main() -> Result<()> {
     let mut output_apk = ZipWriter::new(output_file);
     let has_oldsign = input_apk.file_names().any(is_v1sign);
     if !has_oldsign {
-        println!("Fast editing!");
         fast_edit(input_apk, output_apk, &options)?;
         println!("Signing apk with debug keystore");
         Apk::sign(&options.output, None)?;
