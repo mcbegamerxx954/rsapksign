@@ -24,7 +24,7 @@ struct Options {
     #[clap(required = true)]
     apk: PathBuf,
     // Set package name of apk
-    #[arg(short, long, value_parser = validate_pkgname)]
+    #[arg(short, long)]
     pkgname: Option<String>,
     // Set displayed name of apk
     #[arg(short, long)]
@@ -33,7 +33,7 @@ struct Options {
     #[arg(short, long, required = true)]
     output: PathBuf,
 }
-fn validate_pkgname(pkgname: &str) -> Result<String, String> {
+/* fn validate_pkgname(pkgname: &str) -> Result<String, String> {
     if !pkgname.is_ascii() {
         return Err("Input packagename is not ascii".to_string());
     }
@@ -45,7 +45,7 @@ fn validate_pkgname(pkgname: &str) -> Result<String, String> {
         }
     }
     Ok(pkgname.to_ascii_lowercase())
-}
+} */
 const fn get_style() -> Styles {
     Styles::styled()
         .header(AnsiColor::BrightYellow.on_default())
