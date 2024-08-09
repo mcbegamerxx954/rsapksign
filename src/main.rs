@@ -24,7 +24,7 @@ struct Options {
     #[clap(required = true)]
     apk: PathBuf,
     // Set package name of apk
-    #[arg(short, long)]
+    #[arg(short, long, value_parser = validate_pkgname)]
     pkgname: Option<String>,
     // Set displayed name of apk
     #[arg(short, long)]
@@ -33,19 +33,37 @@ struct Options {
     #[arg(short, long, required = true)]
     output: PathBuf,
 }
-/* fn validate_pkgname(pkgname: &str) -> Result<String, String> {
-    if !pkgname.is_ascii() {
-        return Err("Input packagename is not ascii".to_string());
+fn validate_pkgname(pkgname: &str) -> Result<String, String> {
+    let chars = pkgname.chars();
+    let mut repeated = false;
+    for char in chars {
+        if char == '.' {
+            if repeated {
+                return Err(
+                    "Input package name contains more than one separator per complement"
+                        .to_string(),
+                );
+            }
+            repeated = true;
+        } else {
+            repeated = false;
+        }
     }
-    for char in pkgname.chars() {
-        if !char.is_alphabetic() && char != '.' {
-            return Err(
-                "Package name can only contain alphabetical characters or '' separator".to_string(),
-            );
+    let components = pkgname.split(".");
+    for component in components {
+        if component.chars().nth(0).is_some_and(|c| c.is_ascii_digit()) {
+            return Err("First character after a '.' should never be a number".to_string());
+        }
+        for char in component.chars() {
+            if char != '_' && !char.is_ascii_alphanumeric() {
+                return Err(
+                    "Package name can only contain alphanumerical characters or '_'".to_string(),
+                );
+            }
         }
     }
     Ok(pkgname.to_ascii_lowercase())
-} */
+}
 const fn get_style() -> Styles {
     Styles::styled()
         .header(AnsiColor::BrightYellow.on_default())
